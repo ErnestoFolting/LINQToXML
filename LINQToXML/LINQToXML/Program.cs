@@ -5,6 +5,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using LINQToXML.Structure;
+using System.Globalization;
 
 namespace LINQToXML
 {
@@ -102,6 +103,34 @@ namespace LINQToXML
   
                 }
                 writer.WriteEndElement();
+            }
+            XmlDocument doc = new XmlDocument();
+            doc.Load("storage.xml");
+            var format = new NumberFormatInfo() { NumberDecimalSeparator = ".", };
+            foreach (XmlNode factory in doc.DocumentElement)
+            {
+                string factoryName = factory["name"].InnerText;
+                Console.WriteLine("----------The {0} factory----------",factoryName);
+                foreach(XmlNode project in factory["projects"])
+                {
+                    Console.WriteLine("-----Project-----");
+                    string code = project["code"].InnerText;
+                    string projectName = project["name"].InnerText;
+                    double cost = Double.Parse(project["cost"].InnerText,format);
+                    DateTime startTime = DateTime.Parse(project["startTime"].InnerText);
+                    DateTime endTime = DateTime.Parse(project["endTime"].InnerText);
+                    Console.WriteLine("Code:{0}\nName:{1}\nCost:{2}\nStartTime:{3}\nEndTime:{4}\n", code, projectName, cost,startTime,endTime);
+                    Console.WriteLine("---Participants:---");
+                    foreach (XmlNode person in project["participants"])
+                    {
+                        string surname = person["surname"].InnerText;  
+                        string name = person["name"].InnerText;  
+                        int age = int.Parse(person["age"].InnerText);
+                        
+                        Console.WriteLine("Surname:{0}\nName:{1}\nAge:{2}\n",surname,name,age);
+                    }
+                }
+                Console.WriteLine("\n\n");
             }
         }
         public static void print<T>(IEnumerable<T> lst)
