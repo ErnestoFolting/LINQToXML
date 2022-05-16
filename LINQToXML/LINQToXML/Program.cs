@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Linq;
 using LINQToXML.Structure;
 
 namespace LINQToXML
@@ -59,6 +59,50 @@ namespace LINQToXML
             List<Person> people = new List<Person> { person1, person2, person3, person4, person5 };
             List<Project> projects = new List<Project> { project1, project2, project3, project4 };
 
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            using(XmlWriter writer = XmlWriter.Create("Storage.xml", settings))
+            {
+                writer.WriteStartElement("factories");
+                foreach(var factory in factories)
+                {
+                    writer.WriteStartElement("factory");
+
+                    writer.WriteElementString("name",factory.name);
+
+                    writer.WriteStartElement("projects");
+                    foreach (var project in factory.projects)
+                    {
+                        writer.WriteStartElement("project");
+
+                        writer.WriteElementString("code", project.code);
+                        writer.WriteElementString("name", project.name);
+                        writer.WriteElementString("cost", project.cost.ToString());
+                        writer.WriteElementString("startTime", project.startTime.ToString());
+                        writer.WriteElementString("endTime", project.endTime.ToString());
+
+                        writer.WriteStartElement("participants");
+                        foreach (var person in project.participants)
+                        {
+                            writer.WriteStartElement("person");
+                            writer.WriteElementString("surname", person.surname);
+                            writer.WriteElementString("name", person.name);
+                            writer.WriteElementString("age", person.age.ToString());
+                            writer.WriteEndElement();
+                        }
+                        
+                        writer.WriteEndElement();
+                        
+
+                        writer.WriteEndElement();
+                    }
+                    writer.WriteEndElement();
+
+                    writer.WriteEndElement();
+  
+                }
+                writer.WriteEndElement();
+            }
         }
         public static void print<T>(IEnumerable<T> lst)
         {
